@@ -1,6 +1,6 @@
 import numpy as np
 
-def deriviative_central(f, x, eps = 1e-5):
+def derivative_central(f, x, eps = 1e-5):
     return (f(x + eps) - f(x -eps))/(2*eps)
 
 
@@ -19,8 +19,16 @@ def gradient_central(f, params, eps= 1e-5):
         
     return grad
 
+def max_errors(analytic, numeric):
+    analytic = np.array(analytic, dtype=float)
+    numeric = np.array(numeric, dtype=float)
+    diff = np.abs(analytic - numeric)       
+
+    abs_err = np.max(diff)
+    rel_err = np.max(diff / np.maximum(np.abs(analytic) + np.abs(numeric), 1e-12))
+    return abs_err, rel_err
 if __name__ == "__main__":
-    print(deriviative_central(lambda x: x**2, 2.0))
+    print(derivative_central(lambda x: x**2, 2.0))
 
     def f4(p):
         x, y = p
