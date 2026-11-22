@@ -45,6 +45,22 @@ def fit_gd(X, y, lr = 0.1, steps = 1000):
         
         losses.append(bce_loss(X, w, b, y))
     return w, b, losses
+def confusion(y_true, y_pred):
+    tp = np.sum((y_pred == 1) & (y_true == 1))
+    fp = np.sum((y_pred == 1) & (y_true == 0))
+    fn = np.sum((y_pred == 0) & (y_true == 1))
+    tn = np.sum((y_pred == 0) & (y_true == 0))
+    
+    return tp, fp, fn, tn
+
+def precision_recall_f1(y_true, y_pred):
+    tp, fp, fn, tn = confusion(y_true, y_pred)
+    
+    precision = tp/(tp + fp) if tp + fp>0 else 0.0
+    recall = tp/(tp + fn) if tp + fn >0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall>0 else 0.0
+    
+    return precision, recall, f1
 
 if __name__ == "__main__":
     from numerical_grad import gradient_central
@@ -62,6 +78,15 @@ if __name__ == "__main__":
     print("loss: first", losses[0], " last", losses[-1])
     print("accuracy:", np.mean(predict(X, w, b) == y))
     
+    y_true = np.array([1]*15 + [0]*10 + [1]*5 + [0]*170)
+    y_pred = np.array([1]*15 + [1]*10 + [0]*5 + [0]*170)
+    
+    print("confusion:", confusion(y_true, y_pred))
+    print("P, R, F1:", precision_recall_f1(y_true, y_pred))
+    lazy = np.zeros(200, dtype=int)
+    print("lazy P, R, F1:", precision_recall_f1(y_true, lazy))
+    
+    print("model P, R, F1:", precision_recall_f1(y, predict(X, w, b)))    
     plt.figure()
     plt.plot(losses)
     plt.xlabel("step")
