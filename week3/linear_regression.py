@@ -42,7 +42,25 @@ def fit_gd(X, y, lr =0.01, steps = 1000):
         losses.append(mse_loss(X, w, b, y))
     return w, b, losses
         
-
+def fit_minibatch(X, y, lr=0.05, epochs=20, batch_size=16, seed =0):
+    np.random.seed(seed)
+    w = np.zeros(X.shape[1])
+    b = 0.0
+    losses = []
+    N = len(y)
+    
+    for epoch in range(epochs):
+        idx = np.random.permutation(N)
+        for start in range(0, N, batch_size):
+            batch = idx[start:start+batch_size]
+            Xb, yb = X[batch], y[batch]
+            
+            dw, db = mse_gradients(Xb, w, b, yb)
+            w= w - lr*dw
+            b= b - lr*db
+        losses.append(mse_loss(X, w, b, y))
+    
+    return w, b, losses
 if __name__ == "__main__":
     X, y = make_data()
 
